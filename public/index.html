@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Reservas</title>
-    <link rel="stylesheet" href="/CSS/styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
@@ -22,26 +22,14 @@
         <section id="hero">
             <h1>Bienvenido al Sistema de Gestión de Reservas</h1>
             <p>Reserve su habitación de manera fácil y rápida.</p>
-            <button onclick="scrollToReservation()">Reservar Ahora</button>
-        </section>
-
-        <section id="reservations">
-            <h2>Hacer una Reserva</h2>
-            <form id="reservation-form">
-                <label for="guestName">Nombre del Huésped:</label>
-                <input type="text" id="guestName" name="guestName" required>
-
-                <label for="roomNumber">Número de Habitación:</label>
-                <input type="number" id="roomNumber" name="roomNumber" required>
-
-                <label for="checkInDate">Fecha de Check-in:</label>
-                <input type="date" id="checkInDate" name="checkInDate" required>
-
-                <label for="checkOutDate">Fecha de Check-out:</label>
-                <input type="date" id="checkOutDate" name="checkOutDate" required>
-
-                <button type="submit">Reservar</button>
-            </form>
+            <label for="check-in-date">Fecha de Ingreso:</label>
+            <input type="date" id="check-in-date" name="check-in-date">
+            <label for="check-out-date">Fecha de Salida:</label>
+            <input type="date" id="check-out-date" name="check-out-date">
+            <button id="check-availability">Verificar Disponibilidad</button>
+            <div id="rooms-container">
+                <!-- Aquí se mostrarán las habitaciones -->
+            </div>
         </section>
 
         <section id="about">
@@ -60,7 +48,19 @@
         <p>&copy; 2024 Sistema de Gestión de Reservas. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="/JS/scripts.js"></script>
+    <!-- Formulario emergente para ingresar el nombre del huésped -->
+    <div id="guest-form-container" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Reserva Habitación <span id="selected-room"></span></h2>
+            <form id="guest-form">
+                <label for="guest-name">Nombre del Huésped:</label>
+                <input type="text" id="guest-name" name="guest-name" required>
+                <button type="submit">Reservar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
 </body>
 </html>
-

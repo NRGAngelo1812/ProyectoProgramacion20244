@@ -1,77 +1,103 @@
-// Cargar las variables de entorno desde el archivo .env
-require('dotenv').config();
-
-// Importar los módulos necesarios
 const express = require('express');
-const mysql = require('mysql2');
+const { Sequelize, DataTypes, Op } = require('sequelize');
 const path = require('path');
+
 const app = express();
+const port = 3000;
 
-// Configuración del puerto
-const port = process.env.PORT || 3000;
-
-// Configurar la conexión a la base de datos MySQL
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME
+// Configuración de la base de datos
+const sequelize = new Sequelize('hotel_reservaciones', 'root', 'admin1812', {
+    host: 'localhost',
+    dialect: 'mysql'
 });
 
-// Conectar a la base de datos
-connection.connect((err) => {
-    if (err) {
-        console.error('Error conectando a la base de datos:', err.stack);
-        return;
+// Definir el modelo de reservas, apuntando a la nueva tabla
+const Reservation = sequelize.define('Reservation', {
+    nombre_huesped: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    numero_habitacion: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    fecha_check_in: {
+        type: DataTypes.DATE,
+        allowNull: false
+    },
+    fecha_check_out: {
+        type: DataTypes.DATE,
+        allowNull: false
     }
-    console.log('Conectado a la base de datos.');
+}, {
+    tableName: 'hotel_reservaciones', // Especifica el nuevo nombre de la tabla aquí
+    timestamps: false // Si no estás usando columnas de createdAt y updatedAt
 });
 
-// Configurar middleware para parsear JSON
+// Middleware para parsear JSON
 app.use(express.json());
 
-// Configurar middleware para servir archivos estáticos
+// Middleware para servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ruta para servir la página principal
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Ruta para verificar disponibilidad de habitaciones
+app.get('/check-availability', async (req, res) => {
+    const { checkInDate, checkOutDate } = req.query;
+
+    try {
+        const reservations = await Reservation.findAll({
+            where: {
+                [Op.and]: [
+                    {
+                        fecha_check_in: {
+                            [Op.lte]: checkOutDate
+                        }
+                    },
+                    {
+                        fecha_check_out: {
+                            [Op.gte]: checkInDate
+                        }
+                    }
+                ]
+            }
+        });
+
+        const occupiedRooms = reservations.map(reservation => ({
+            numero_habitacion: reservation.numero_habitacion,
+            fecha_check_in: reservation.fecha_check_in,
+            fecha_check_out: reservation.fecha_check_out
+        }));
+
+        res.json({ occupiedRooms });
+    } catch (error) {
+        console.error('Error al verificar la disponibilidad:', error);
+        res.status(500).json({ error: 'Error al verificar la disponibilidad' });
+    }
 });
 
-// Ruta para crear una nueva reserva
-app.post('/reservas', (req, res) => {
-    const { nombreHuesped, numeroHabitacion, fechaCheckIn, fechaCheckOut } = req.body;
+// **Nueva ruta para manejar la reserva**
+app.post('/reservar', async (req, res) => {
+    const { guestName, roomNumber, checkInDate, checkOutDate } = req.body;
 
-    const query = `
-        INSERT INTO reservas (nombre_huesped, numero_habitacion, fecha_check_in, fecha_check_out)
-        VALUES (?, ?, ?, ?)
-    `;
-    
-    connection.query(query, [nombreHuesped, numeroHabitacion, fechaCheckIn, fechaCheckOut], (err, results) => {
-        if (err) {
-            console.error('Error al crear la reserva:', err.stack);
-            res.status(500).send('Error al crear la reserva.');
-            return;
-        }
-        res.status(201).send('Reserva creada con éxito.');
-    });
-});
+    try {
+        const newReservation = await Reservation.create({
+            nombre_huesped: guestName,
+            numero_habitacion: roomNumber,
+            fecha_check_in: checkInDate,
+            fecha_check_out: checkOutDate
+        });
 
-// Ruta para obtener todas las reservas
-app.get('/reservas', (req, res) => {
-    const query = 'SELECT * FROM reservas';
-    
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error('Error al obtener reservas:', err.stack);
-            res.status(500).send('Error al obtener reservas.');
-            return;
-        }
-        res.json(results);
-    });
+        res.status(201).json(newReservation);
+    } catch (error) {
+        console.error('Error al realizar la reserva:', error);
+        res.status(500).json({ error: 'Error al realizar la reserva' });
+    }
 });
 
 // Iniciar el servidor
 app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
 });
+
+// Sincronizar el modelo con la base de datos (No necesario en este caso ya que la tabla ya existe)
+sequelize.sync();
