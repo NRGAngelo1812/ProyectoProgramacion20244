@@ -12,37 +12,125 @@ body {
     color: #333;
 }
 
-header {
-    background: #333;
-    color: #fff;
-    padding: 1rem;
-}
-
-header nav ul {
-    display: flex;
+/* Eñ simbolo de la clase sirve para darle ese estilo a toda la pagina como predeterminada*/
+*{
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
     list-style: none;
-    justify-content: center;
+    box-sizing: border-box;
 }
 
-header nav ul li {
-    margin: 0 1rem;
+body{
+    font-family: montserrat;
 }
 
-header nav ul li a {
-    color: #fff;
+ /* Inicio Nav */
+nav{
+    background: #0062e6;
+    height: 80px;
+    width: 100%;
+}
+
+label.logo{
+    color: white;
+    font-size: 35px;
+    line-height: 90px;
+    padding: 0 100px;
+    font-weight: bold;
+}
+
+nav ul{
+    float: right;
+    margin-right: 20px;
+}
+
+nav ul li{
+    display: inline-block;
+    line-height: 80px;
+    margin: 0 5px;
+}
+
+nav ul li a{
+    color: white;
+    font-size: 17px;
+    padding: 7px 13px;
+    border-radius: 3px;
+    text-transform: uppercase;
     text-decoration: none;
 }
+a.active,a:hover{
+    background: #1b9bff;
+    transition: .5s;
+}
+.checkbtn{
+    font-size: 30px;
+    color: white;
+    float: right;
+    line-height: 80px;
+    margin-right: 40px;
+    cursor: pointer;
+    display: none;
 
+}
+#check{
+    display: none;
+
+}
+@media (max-width: 952px){
+    label.logo{
+        font-size: 30px;
+        padding-left: 50px;
+    }
+    nav ul li a{
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 858px){
+    .checkbtn{
+        display: block;
+    }
+    ul{
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        background: #2c3e50;
+        top: 80px;
+        left: -100%;
+        text-align: center;
+        transition: all .5s;
+    }
+    nav ul li{
+        display: block;
+        margin: 50px 0;
+        line-height: 30px;
+    }
+    nav ul li a{
+        font-size: 20px;
+    }
+    a:hover,a.active{
+        background: none;
+        color: #0082e6;
+    }
+    #check:checked ~ ul{
+        left: 0;
+    }
+}
+/* Fin NAV*/
 #hero {
-    background: #ddd;
-    padding: 20px;
-    color: #333;
+    background: linear-gradient(to right, #4a90e2, #50a7f1); /* Degradado de fondo */
+    color: #ffffff; /* Texto blanco */
+    padding: 50px 20px;
     text-align: center;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 #hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-weight: 700;
 }
 
 #reservation-date, #check-in-date, #check-out-date {
