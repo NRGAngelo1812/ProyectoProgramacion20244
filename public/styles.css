@@ -118,6 +118,13 @@ a.active,a:hover{
     }
 }
 /* Fin NAV*/
+
+hero-section{
+    background-image: ('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8aG90ZWx8ZW58MHx8MHx8fDA%3D');
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+}
 #hero {
     background: linear-gradient(to right, #4a90e2, #50a7f1); /* Degradado de fondo */
     color: #ffffff; /* Texto blanco */
